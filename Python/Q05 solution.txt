@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+class SalesListManager:
+    def __init__(self):
+        pass
+    def create_dataframe(self, data, columns):
+        df = pd.DataFrame(data, columns=['OrderID','CustomerName','Category'
+        ,'Region','Units','UnitPrice','Discount','Channel','OrderDate'])
+        df['OrderID'] = pd.to_numeric(df['OrderID'], errors = 'coerce').astype('Int64')
+        df['Units'] = pd.to_numeric(df['Units'], errors = 'coerce').astype('Int64')
+        df['UnitPrice'] = pd.to_numeric(df['UnitPrice'], errors = 'coerce')
+        df['Discount'] = pd.to_numeric(df['Discount'], errors='coerce')
+        df['CustomerName'] = df['CustomerName'].str.strip().str.title()
+        df['Category'] = df['Category'].str.strip()
+        df['Region'] = df['Region'].str.strip()
+        df['Channel'] = df['Channel'].str.strip()
+        df['OrderDate'] = pd.to_datetime(df['OrderDate'], errors ='coerce', format = 'mixed')
+        return df
+    def get_customer_names(self, df):
+        return df['CustomerName'].tolist()
+    def groupby_region_category_units(self,df):
+        new_df = df.groupby(['Region','Category'], as_index = False)['Units'].sum()
+        new_df = new_df[['Region', 'Category', 'Units']] 
+        return new_df
+    def compute_revenue(self, df):
+        new_df = df.copy()
+        new_df['Discount'] = new_df['Discount'].fillna(0)
+        new_df['UnitPrice'] = new_df['UnitPrice'].fillna(0)
+        new_df['Revenue'] = new_df['Units']*new_df['UnitPrice']*(1-new_df['Discount'])
+        return new_df
+    def assign_amount_flag(self, df):
+        new_df = df.copy()
+        new_df['Discount'] = new_df['Discount'].fillna(0)
+        new_df['UnitPrice'] = new_df['UnitPrice'].fillna(0)
+        new_df['Revenue'] = new_df['Units']*new_df['UnitPrice']*(1-new_df['Discount'])
+        new_df['AmountFlag'] = 'Low'
+        new_df.loc[(new_df["Revenue"]>=300) & (new_df["Revenue"] < 800), "AmountFlag"] = "Medium"
+        new_df.loc[new_df['Revenue'] >= 800, "AmountFlag"] = "High"
+        return new_df
+    def build_category_region_crosstab(self, df):
+        

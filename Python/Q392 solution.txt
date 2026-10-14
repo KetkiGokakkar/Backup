@@ -1,0 +1,31 @@
+class SupplyChainInventory:
+    def __init__(self):
+        self.inv = {}
+    def add_product(self, product_id, quantity):
+        if product_id in self.inv.keys():
+            self.inv[product_id] += quantity
+        else:
+            self.inv[product_id] = quantity
+        return self.inv
+    def fulfill_order(self, product_id, quantity):
+        if product_id not in self.inv.keys():
+            raise ValueError("Product not found")
+        
+        for product_id in self.inv.keys():
+            if int(self.inv[product_id]) < quantity:
+                raise ValueError("Insufficient Stock")
+            
+            self.inv[product_id] -= quantity
+        return self.inv
+    def restock_return(self, product_id, quantity):
+        if product_id in self.inv.keys():
+            self.inv[product_id] += quantity
+        else:
+            self.inv[product_id] = quantity
+        return self.inv
+    def list_available_products(self):
+        list_ = [prod_id  for prod_id in self.inv.keys() if self.inv[prod_id]>0]
+        # for product_id in self.inv.keys():
+        #     if self.inv[product_id] > 0:
+        #         list_.append(product_id)
+        return list_

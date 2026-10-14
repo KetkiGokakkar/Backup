@@ -1,0 +1,101 @@
+import numpy as np
+class NumpyArrayAnalyzer:
+    def create_order_array(self, amounts) -> np.ndarray:
+        arr = np.array(amounts)
+        return arr
+    def validate_order_array(self, order_array: np.ndarray) -> bool:
+        if order_array.size>0 and np.all(order_array>=0):
+            return True
+        return False
+    def apply_discount(self, order_array: np.ndarray) -> np.ndarray:
+        return np.where(order_array>=150.0,order_array*0.9,order_array)
+    def format_order_amounts(self, order_array: np.ndarray) -> np.ndarray:
+        # result=[]
+        # for i in order_array:
+        #     result.append(f"${i:.2f}")
+        # return np.array(result)
+        return np.char.mod("$%.2f", order_array)
+    def compute_order_summary(self,order_array: np.ndarray):
+        total = np.sum(order_array)
+        average = np.mean(order_array)
+        max_=np.max(order_array)
+        return(total,average,max_)
+    def flag_high_value_orders(self,order_array: np.ndarray,threshold: float = 150.0):
+        return np.where(order_array>=threshold,"High","Normal")
+    def create_stock_array(self, changes):
+        arr1= np.array(changes)
+        return arr1
+    def validate_stock_array(self, changes: np.ndarray) -> bool:
+        return bool(np.all((changes>=-10)&(changes<=10)))
+    def compute_volatility(self, changes: np.ndarray):
+        mean = np.mean(changes)
+        if changes.size>1:
+            std= np.std(changes, ddof=1)
+        else:
+            std = np.std(changes, ddof=0)
+        max=np.max(changes)
+        return (mean,std,max)
+    def flag_volatile_stocks(self, changes: np.ndarray) -> np.ndarray:
+        return np.where(changes<2,"Stable",np.where(changes>5,"High Risk","Moderate Risk"))
+    def longest_loss_streak(self, changes: np.ndarray) -> int:
+        max_ = 0
+        cs = 0
+        for i in changes:
+            if i<0:
+                cs+=1
+            else:
+                cs=0
+            if max_<cs:
+                max_=cs
+        return max_
+    def format_stock_report(self, changes: np.ndarray) -> np.ndarray:
+        return np.char.mod("%.2f%%",changes)
+    def create_sequential_array(
+    self,
+    start: int,
+    stop: int,
+    step: int = 1
+) -> np.ndarray:
+        arr = np.arange(start,stop,step=1)
+        return arr
+    def compute_elementwise_square(self, arr: np.ndarray) -> np.ndarray:
+        return arr**2
+    def compute_statistics(
+    self,
+    arr: np.ndarray):
+        sum = np.sum(arr)
+        mean = np.mean(arr)
+        min = np.min(arr)
+        max = np.max(arr)
+        return(sum,mean,min,max)
+        
+    def filter_above_threshold(
+    self,
+    arr: np.ndarray,
+    threshold: float
+) -> np.ndarray:
+        return arr[arr>threshold]
+    def replace_negatives_with_zero(self, arr: np.ndarray) -> np.ndarray:
+        return np.where(arr<0,0,arr)
+    def normalize_array(self, arr: np.ndarray) -> np.ndarray:
+        if np.max(arr)==np.min(arr):
+            return np.zeros_like(arr)
+        return (arr-(np.min(arr)))/((np.max(arr))-(np.min(arr)))
+    def concatenate_arrays(
+    self,
+    a: np.ndarray,
+    b: np.ndarray
+) -> np.ndarray:
+        return np.concatenate((a,b))
+    def compute_dot_product(
+    self,
+    a: np.ndarray,
+    b: np.ndarray
+):
+        return np.dot(a,b)
+    def get_unique_values(self, arr: np.ndarray) -> np.ndarray:
+        return np.unique(arr)
+    def sort_array(self, arr: np.ndarray) -> np.ndarray:
+        return np.sort(arr)
+    def count_nonzero(self, arr: np.ndarray) -> int:
+        return np.count_nonzero(arr)

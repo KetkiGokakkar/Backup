@@ -1,0 +1,29 @@
+import pandas as pd
+class GreenhouseAnalyzer:
+    def __init__(self):
+        pass
+    def create_production_df(self, data):
+        df = pd.DataFrame(data, columns=["PlotID", "Date", "YieldKg", "Temperature", "DowntimeMinutes"])
+        df['Date'] = df['Date'].astype(str)
+        return df
+    def total_yield_per_plot(self, df):
+        result = df.copy()
+        result = result.groupby("PlotID")["YieldKg"].sum().reset_index(name='TotalYield')
+        return result[['PlotID', 'TotalYield']]
+    def add_yield_per_active_min(self, df: pd.DataFrame) -> pd.DataFrame:
+        result = df.copy()
+        active_min=1440-result['DowntimeMinutes']
+        result['YieldPerMin'] = (result['YieldKg']/active_min).round(2)
+        return result
+    def categorize_temperature_band(self, df: pd.DataFrame) -> pd.DataFrame:
+        result = df.copy()
+        result['TempBand']='Cool'
+        result.loc[result['Temperature']>=20, 'TempBand'] = 'Warm'
+        result.loc[result['Temperature']>=30, 'TempBand'] = 'Hot'
+        return result
+    def frequent_downtime_rows(self, df: pd.DataFrame, n: int) -> pd.DataFrame:
+        result = df.copy()
+        return result[result['DowntimeMinutes']>n]
+    def clean_and_top_yield_days(self, df: pd.DataFrame) -> pd.DataFrame:
+        result = df.copy()
+        return result.dropna().sort_values(by='YieldKg', ascending=False).reset_index(drop=True)

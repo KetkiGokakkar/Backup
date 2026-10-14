@@ -1,0 +1,36 @@
+class WarehouseStockManager:
+    def __init__(self):
+        self.stock = {}
+
+    def register_item(self,item_name, quantity):
+        if item_name in self.stock.keys():
+            self.stock[item_name] += quantity
+        else:
+            self.stock[item_name] = quantity
+        return self.stock
+
+    def process_shipment(self,shipment):
+        for i in shipment.keys():
+            for j in self.stock.keys():
+                if i==j:
+                    if self.stock[i]!= "Out of Stock":
+                        if shipment[i]>0  and self.stock[j] > shipment[i]:
+                            self.stock[j] -= shipment[i]
+                        elif shipment[i]>0 and self.stock[j] <= shipment[i]:
+                            self.stock[j] = "Out of Stock"
+                        elif shipment[i]<=0 :
+                            self.stock[j] = "Out of Stock"
+        return self.stock
+
+    def restock_items(self, restock_quantity):
+        for item_name in self.stock.keys():
+            if self.stock[item_name] == "Out of Stock":
+                self.stock[item_name] = restock_quantity
+        return self.stock
+    def generate_low_stock_report(self, threshold):
+        dict = {}
+        for item_name in self.stock.keys():
+            if self.stock[item_name]!="Out of Stock":
+                if int(self.stock[item_name]) < threshold:
+                    dict[item_name] = self.stock[item_name]
+        return dict
